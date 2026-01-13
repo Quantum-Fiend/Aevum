@@ -1,0 +1,32 @@
+# Aevum Default Configuration
+# Copy to ~/.aevum/config.toml or ./aevum.toml
+
+[coordinator]
+host = "0.0.0.0"
+trace_port = 9876
+api_port = 8080
+max_trace_size_mb = 1024
+retention_days = 30
+
+[agent]
+coordinator_host = "localhost"
+coordinator_port = 9876
+buffer_size = 10000
+flush_interval_ms = 100
+compression_enabled = true
+
+[tracing]
+snapshot_interval = 1000
+compression_level = 3
+capture_memory_writes = false
+capture_syscalls = true
+excluded_modules = [
+    "logging",
+    "__pycache__",
+    "site-packages"
+]
+
+[logging]
+level = "info"
+format = "text"
+output = "stdout"

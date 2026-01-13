@@ -1,0 +1,32 @@
+.causality-graph-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.graph-header {
+    padding: 1rem 1.5rem;
+    border-radius: 12px 12px 0 0;
+    margin-bottom: 0;
+}
+
+.graph-header h3 {
+    font-size: 1.1rem;
+    color: var(--accent-primary);
+    margin-bottom: 0.25rem;
+}
+
+.graph-header p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.graph-canvas {
+    flex: 1;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0 0 12px 12px;
+    border-top: none;
+}

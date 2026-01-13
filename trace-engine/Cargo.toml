@@ -1,0 +1,30 @@
+[package]
+name = "trace-engine"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+bincode.workspace = true
+zstd.workspace = true
+crossbeam.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+memmap2.workspace = true
+parking_lot.workspace = true
+uuid = { version = "1.6", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+dashmap = "5.5"
+
+[dev-dependencies]
+tokio-test = "0.4"
+criterion = "0.5"
+
+[[bench]]
+name = "trace_performance"
+harness = false

@@ -1,0 +1,171 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://aevum.io/schemas/trace-file.json",
+    "title": "Aevum Trace File Format",
+    "description": "Schema for Aevum trace files (.aevum)",
+    "type": "object",
+    "required": [
+        "version",
+        "trace_id",
+        "created_at",
+        "events"
+    ],
+    "properties": {
+        "version": {
+            "type": "string",
+            "description": "Trace file format version",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "examples": [
+                "1.0.0"
+            ]
+        },
+        "trace_id": {
+            "type": "string",
+            "description": "Unique identifier for this trace",
+            "format": "uuid"
+        },
+        "created_at": {
+            "type": "string",
+            "description": "Timestamp when trace was created",
+            "format": "date-time"
+        },
+        "metadata": {
+            "type": "object",
+            "description": "Additional trace metadata",
+            "properties": {
+                "command": {
+                    "type": "string",
+                    "description": "Command that was traced"
+                },
+                "hostname": {
+                    "type": "string",
+                    "description": "Hostname of the machine"
+                },
+                "os": {
+                    "type": "string",
+                    "description": "Operating system"
+                },
+                "language": {
+                    "type": "string",
+                    "description": "Programming language"
+                },
+                "agent_version": {
+                    "type": "string",
+                    "description": "Version of the agent used"
+                }
+            }
+        },
+        "compression": {
+            "type": "string",
+            "description": "Compression algorithm used for events",
+            "enum": [
+                "none",
+                "zstd",
+                "lz4",
+                "gzip"
+            ]
+        },
+        "events": {
+            "type": "array",
+            "description": "Array of captured events",
+            "items": {
+                "$ref": "#/definitions/event"
+            }
+        },
+        "snapshots": {
+            "type": "array",
+            "description": "Checkpoint snapshots for fast seeking",
+            "items": {
+                "$ref": "#/definitions/snapshot"
+            }
+        }
+    },
+    "definitions": {
+        "event": {
+            "type": "object",
+            "required": [
+                "event_type",
+                "metadata"
+            ],
+            "properties": {
+                "event_type": {
+                    "type": "string",
+                    "enum": [
+                        "FunctionCall",
+                        "FunctionReturn",
+                        "MemoryWrite",
+                        "Syscall",
+                        "ThreadSwitch",
+                        "NetworkIO",
+                        "GarbageCollection",
+                        "ThreadCreate",
+                        "ThreadExit",
+                        "ProcessFork",
+                        "ProcessExec",
+                        "MutexLock",
+                        "MutexUnlock",
+                        "RandomBytes",
+                        "Timestamp"
+                    ]
+                },
+                "metadata": {
+                    "$ref": "#/definitions/event_metadata"
+                }
+            }
+        },
+        "event_metadata": {
+            "type": "object",
+            "required": [
+                "trace_id",
+                "process_id",
+                "thread_id",
+                "timestamp_ns",
+                "sequence_number"
+            ],
+            "properties": {
+                "trace_id": {
+                    "type": "string"
+                },
+                "process_id": {
+                    "type": "integer"
+                },
+                "thread_id": {
+                    "type": "integer"
+                },
+                "timestamp_ns": {
+                    "type": "integer"
+                },
+                "vector_clock": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "sequence_number": {
+                    "type": "integer"
+                }
+            }
+        },
+        "snapshot": {
+            "type": "object",
+            "required": [
+                "sequence_number",
+                "offset"
+            ],
+            "properties": {
+                "sequence_number": {
+                    "type": "integer",
+                    "description": "Event sequence number at snapshot"
+                },
+                "offset": {
+                    "type": "integer",
+                    "description": "File offset to snapshot data"
+                },
+                "size": {
+                    "type": "integer",
+                    "description": "Snapshot data size in bytes"
+                }
+            }
+        }
+    }
+}

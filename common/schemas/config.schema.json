@@ -1,0 +1,116 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Aevum Configuration",
+    "description": "Configuration file for Aevum components",
+    "type": "object",
+    "properties": {
+        "coordinator": {
+            "type": "object",
+            "properties": {
+                "host": {
+                    "type": "string",
+                    "default": "0.0.0.0"
+                },
+                "trace_port": {
+                    "type": "integer",
+                    "default": 9876
+                },
+                "api_port": {
+                    "type": "integer",
+                    "default": 8080
+                },
+                "max_trace_size_mb": {
+                    "type": "integer",
+                    "default": 1024
+                },
+                "retention_days": {
+                    "type": "integer",
+                    "default": 30
+                }
+            }
+        },
+        "agent": {
+            "type": "object",
+            "properties": {
+                "coordinator_host": {
+                    "type": "string",
+                    "default": "localhost"
+                },
+                "coordinator_port": {
+                    "type": "integer",
+                    "default": 9876
+                },
+                "buffer_size": {
+                    "type": "integer",
+                    "default": 10000
+                },
+                "flush_interval_ms": {
+                    "type": "integer",
+                    "default": 100
+                },
+                "compression_enabled": {
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "tracing": {
+            "type": "object",
+            "properties": {
+                "snapshot_interval": {
+                    "type": "integer",
+                    "default": 1000
+                },
+                "compression_level": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 22,
+                    "default": 3
+                },
+                "capture_memory_writes": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "capture_syscalls": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "excluded_modules": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": []
+                }
+            }
+        },
+        "logging": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "string",
+                    "enum": [
+                        "trace",
+                        "debug",
+                        "info",
+                        "warn",
+                        "error"
+                    ],
+                    "default": "info"
+                },
+                "format": {
+                    "type": "string",
+                    "enum": [
+                        "json",
+                        "text"
+                    ],
+                    "default": "text"
+                },
+                "output": {
+                    "type": "string",
+                    "default": "stdout"
+                }
+            }
+        }
+    }
+}

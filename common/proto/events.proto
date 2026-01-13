@@ -1,0 +1,186 @@
+syntax = "proto3";
+
+package aevum;
+
+option go_package = "aevum/proto";
+
+// Event metadata shared by all event types
+message EventMetadata {
+    string trace_id = 1;
+    uint32 process_id = 2;
+    uint64 thread_id = 3;
+    uint64 timestamp_ns = 4;
+    map<uint32, uint64> vector_clock = 5;
+    uint64 sequence_number = 6;
+}
+
+// Unified event message
+message Event {
+    EventMetadata metadata = 1;
+    
+    oneof event_data {
+        FunctionCall function_call = 10;
+        FunctionReturn function_return = 11;
+        MemoryWrite memory_write = 12;
+        Syscall syscall = 13;
+        ThreadSwitch thread_switch = 14;
+        NetworkIO network_io = 15;
+        GarbageCollection garbage_collection = 16;
+        ThreadCreate thread_create = 17;
+        ThreadExit thread_exit = 18;
+        ProcessFork process_fork = 19;
+        ProcessExec process_exec = 20;
+        MutexLock mutex_lock = 21;
+        MutexUnlock mutex_unlock = 22;
+        RandomBytes random_bytes = 23;
+        Timestamp timestamp = 24;
+    }
+}
+
+message FunctionCall {
+    string function_name = 1;
+    string module = 2;
+    bytes args = 3;
+    uint32 stack_depth = 4;
+}
+
+message FunctionReturn {
+    string function_name = 1;
+    bytes return_value = 2;
+    uint32 stack_depth = 3;
+}
+
+message MemoryWrite {
+    uint64 address = 1;
+    uint64 size = 2;
+    bytes old_value = 3;
+    bytes new_value = 4;
+}
+
+message Syscall {
+    uint64 syscall_number = 1;
+    string syscall_name = 2;
+    repeated uint64 args = 3;
+    int64 result = 4;
+}
+
+message ThreadSwitch {
+    uint64 from_thread = 1;
+    uint64 to_thread = 2;
+    string reason = 3;
+}
+
+message NetworkIO {
+    enum Direction {
+        SEND = 0;
+        RECEIVE = 1;
+    }
+    Direction direction = 1;
+    int32 socket_fd = 2;
+    string remote_addr = 3;
+    bytes data = 4;
+    uint64 bytes_transferred = 5;
+}
+
+message GarbageCollection {
+    string gc_type = 1;
+    uint64 duration_ns = 2;
+    uint64 bytes_collected = 3;
+    uint64 heap_size_before = 4;
+    uint64 heap_size_after = 5;
+}
+
+message ThreadCreate {
+    uint64 new_thread_id = 1;
+    uint64 parent_thread_id = 2;
+}
+
+message ThreadExit {
+    int32 exit_code = 1;
+}
+
+message ProcessFork {
+    uint32 child_process_id = 1;
+}
+
+message ProcessExec {
+    string executable = 1;
+    repeated string args = 2;
+}
+
+message MutexLock {
+    uint64 mutex_id = 1;
+    bool acquired = 2;
+}
+
+message MutexUnlock {
+    uint64 mutex_id = 1;
+}
+
+message RandomBytes {
+    bytes bytes = 1;
+}
+
+message Timestamp {
+    uint64 wall_clock_ns = 1;
+}
+
+// Trace submission from agents
+message TraceSubmission {
+    string node_id = 1;
+    string trace_id = 2;
+    repeated Event events = 3;
+    uint64 timestamp = 4;
+}
+
+// Trace query request
+message TraceQueryRequest {
+    string trace_id = 1;
+    uint64 start_sequence = 2;
+    uint64 end_sequence = 3;
+    repeated string event_types = 4;
+    repeated uint64 thread_ids = 5;
+}
+
+// Trace query response
+message TraceQueryResponse {
+    string trace_id = 1;
+    repeated Event events = 2;
+    uint64 total_count = 3;
+}
+
+// Coordinator service
+service CoordinatorService {
+    // Submit trace events from an agent
+    rpc SubmitTrace(TraceSubmission) returns (SubmitTraceResponse);
+    
+    // Query trace events
+    rpc QueryTrace(TraceQueryRequest) returns (TraceQueryResponse);
+    
+    // Get global timeline
+    rpc GetTimeline(TimelineRequest) returns (TimelineResponse);
+    
+    // Stream events in real-time
+    rpc StreamEvents(StreamRequest) returns (stream Event);
+}
+
+message SubmitTraceResponse {
+    bool success = 1;
+    string message = 2;
+    uint64 events_received = 3;
+}
+
+message TimelineRequest {
+    string trace_id = 1;
+}
+
+message TimelineResponse {
+    string trace_id = 1;
+    repeated Event events = 2;
+    uint64 node_count = 3;
+}
+
+message StreamRequest {
+    string trace_id = 1;
+    bool include_history = 2;
+}

@@ -1,0 +1,29 @@
+[workspace]
+members = [
+    "trace-engine",
+    "replay-engine",
+    "cli",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Aevum Contributors"]
+license = "MIT"
+repository = "https://github.com/yourusername/aevum"
+
+[workspace.dependencies]
+tokio = { version = "1.35", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bincode = "1.3"
+zstd = "0.13"
+crossbeam = "0.8"
+thiserror = "1.0"
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "4.4", features = ["derive"] }
+memmap2 = "0.9"
+parking_lot = "0.12"

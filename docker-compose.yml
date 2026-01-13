@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  coordinator:
+    build:
+      context: ./coordinator
+      dockerfile: Dockerfile
+    ports:
+      - "9876:9876"
+      - "8080:8080"
+    environment:
+      - LOG_LEVEL=info
+    volumes:
+      - trace-data:/data
+    networks:
+      - aevum-network
+
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - coordinator
+    environment:
+      - VITE_API_URL=http://coordinator:8080
+    networks:
+      - aevum-network
+
+volumes:
+  trace-data:
+
+networks:
+  aevum-network:
+    driver: bridge
